@@ -1,0 +1,3 @@
+[submodule "pgsync"]
+	path = pgsync
+	url = https://github.com/harsh-dev-ops/pgsync.git
