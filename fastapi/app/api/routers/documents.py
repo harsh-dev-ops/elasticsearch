@@ -10,7 +10,6 @@ from app.database.elasticsearch.deps import es_dependency
 
 router = APIRouter()
 
-
 @router.post('/create/{index}', status_code=status.HTTP_201_CREATED)
 async def create_index(request: Request, response: Response, es:es_dependency, index:str, data:schema.CreateDocument):
     obj = await es.create(index=index,document=data.model_dump(), id=str(uuid4()))
