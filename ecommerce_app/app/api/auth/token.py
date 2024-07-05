@@ -8,7 +8,7 @@ from .services import auth_request
 
 router = APIRouter()
 
-@router.post('/token')
+@router.post('/auth')
 async def login_access_token(
     request: Request, 
     response: Response, 

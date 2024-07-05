@@ -33,6 +33,6 @@ app.include_router(
 
 app.include_router(
     token.router,
-    prefix='',
+    prefix='/api',
     tags=['Tokens'],
 )

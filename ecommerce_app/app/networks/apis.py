@@ -36,7 +36,7 @@ async def create_request(
             headers=headers,
         )
         
-        if status_code not in range(200, 300):
+        if status_code >= 400:
             raise HTTPException(
                 detail=resp_data.get('detail', 'Internal Server Error'),
                 status_code=status_code

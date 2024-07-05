@@ -1,34 +1,43 @@
 version: '3.9'
 services:
 
-  # database:
-  #   image: pgsync:postgres
-  #   build:
-  #     context: ./postgres
-  #     dockerfile: dockerfile
-  #   ports:
-  #     - '5432:5432'
-  #   volumes:
-  #     - pgdata:/var/lib/postgresql/data
-  #   env_file:
-  #     - .env
-  #   environment:
-  #     - POSTGRES_DB=${PG_DATABASE}
-  #     - POSTGRES_USER=${PG_USER}
-  #     - POSTGRES_PASSWORD=${PG_PASSWORD}
-  
-  # redis:
-  #   image: 'redis:alpine'
-  #   volumes:
-  #     - redis_data:/data
-  #   ports:
-  #     - '6378:6379'
+  postgres:
+    image: postgres:15-alpine
+    ports:
+      - '5431:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+
+  ref_database:
+    image: ecommerce:sample-postgres15-alpine
+    build:
+      context: ./docker/postgres
+      dockerfile: dockerfile
+    ports:
+      - '5432:5432'
+    volumes:
+      - ref-pgdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+
+  redis:
+    image: 'redis:alpine'
+    volumes:
+      - redis_data:/data
+    ports:
+      - '6378:6379'
 
   backend:
     build:
       context: .
-      dockerfile: docker/dev/dockerfile
-    image: fastapi_elasticsearch
+      dockerfile: docker/fastapi/dockerfile
+    image: ecommerce:fastapi
     env_file:
       - .env
     ports:
@@ -38,34 +47,34 @@ services:
       - .:/home/app
     command: bash docker/dev/entrypoint.sh
 
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.14.1
-    container_name: elasticsearch
-    environment:
-      - xpack.security.enabled=false
-      - discovery.type=single-node
-      - bootstrap.memory_lock=true
-      - 'ES_JAVA_OPTS=-Xms512m -Xmx512m'
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    ports:
-      - '9200:9200'
-    volumes:
-      - search-data:/usr/share/elasticsearch/data
+  # elasticsearch:
+  #   image: docker.elastic.co/elasticsearch/elasticsearch:8.14.1
+  #   container_name: elasticsearch
+  #   environment:
+  #     - xpack.security.enabled=false
+  #     - discovery.type=single-node
+  #     - bootstrap.memory_lock=true
+  #     - 'ES_JAVA_OPTS=-Xms512m -Xmx512m'
+  #   ulimits:
+  #     memlock:
+  #       soft: -1
+  #       hard: -1
+  #   ports:
+  #     - '9200:9200'
+  #   volumes:
+  #     - search-data:/usr/share/elasticsearch/data
     # depends_on:
     #   - database
     #   - redis
 
-  kibana:
-    image: docker.elastic.co/kibana/kibana:8.14.1
-    ports:
-      - '5601:5601'
-    environment:
-      - ELASTICSEARCH_HOSTS=${ELASTICSEARCH_HOSTS}
-    depends_on:
-      - elasticsearch
+  # kibana:
+  #   image: docker.elastic.co/kibana/kibana:8.14.1
+  #   ports:
+  #     - '5601:5601'
+  #   environment:
+  #     - ELASTICSEARCH_HOSTS=${ELASTICSEARCH_HOSTS}
+  #   depends_on:
+  #     - elasticsearch
   
   # pgsync:
   #   image: pgsync
@@ -82,5 +91,6 @@ services:
   #     - redis
 
 volumes:
-  # pgdata:
+  pgdata:
+  ref-pgdata:
   search-data:
