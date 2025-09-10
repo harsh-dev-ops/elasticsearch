@@ -1,3 +1,6 @@
 [submodule "pgsync"]
 	path = pgsync
 	url = https://github.com/harsh-dev-ops/pgsync.git
+[submodule "elastic_stack_example"]
+	path = elastic-stack-docker-part-two
+	url = https://github.com/elkninja/elastic-stack-docker-part-two.git
